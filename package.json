@@ -1,0 +1,24 @@
+{
+  "name": "mapanything",
+  "version": "1.0.0",
+  "description": "credit system with geolocation google api",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CarturoStores/geoservice-credit-system.git"
+  },
+  "author": "David Perez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CarturoStores/geoservice-credit-system/issues"
+  },
+  "homepage": "https://github.com/CarturoStores/geoservice-credit-system#readme",
+  "dependencies": {
+    "sequelize": "^4.41.2",
+    "sequelize-cli": "^5.4.0"
+  }
+}
