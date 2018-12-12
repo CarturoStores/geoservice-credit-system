@@ -4,6 +4,7 @@ require('dotenv').config({
 const express = require('express');
 const bodyParser = require('body-parser');
 const users = require('./routes/api/users.js');
+const address = require('./routes/api/address.js');
 const app = express();
 
 // Body parser middleware
@@ -15,6 +16,12 @@ const db = require('./models');
 
 //Use Routes
 app.use('/api/users', users);
+app.use('/api/address', address);
+
+// Serve up static assets (usually on heroku)
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+}
 
 const port = process.env.PORT || 4200;
 
