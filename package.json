@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/CarturoStores/geoservice-credit-system#readme",
   "dependencies": {
+    "dotenv": "^6.2.0",
+    "mysql2": "^1.6.4",
     "sequelize": "^4.41.2",
     "sequelize-cli": "^5.4.0"
   }
