@@ -53,5 +53,15 @@ require('dotenv').config({
       return res.status(404).send(err);
     });
   });
+
+  // @route   GET api/address/all
+  // @desc    // Finding multiple entries
+  // @access  Public
+  router.get('/all', (req, res) => {
+    // address will be an array of all Geocoder instances
+    db.Geocoder.findAll()
+      .then(addressList => res.json(addressList))
+      .catch(err => res.status(404).json({ errors: 'Error Have Been Occurred'}));
+  });
   
   module.exports = router;
