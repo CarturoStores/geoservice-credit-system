@@ -2,7 +2,7 @@
   "name": "mapanything",
   "version": "1.0.0",
   "engines": {
-    "node": "11.04.0"
+    "node": "9.11.x"
   },
   "description": "credit system REST with geocoding API",
   "main": "server.js",
