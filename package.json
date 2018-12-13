@@ -1,6 +1,9 @@
 {
   "name": "mapanything",
   "version": "1.0.0",
+  "engines": {
+    "node": "11.04.x"
+  },
   "description": "credit system REST with geocoding API",
   "main": "server.js",
   "scripts": {
