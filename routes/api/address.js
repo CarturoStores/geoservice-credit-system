@@ -50,7 +50,7 @@ require('dotenv').config({
     }))
     .then(geocoder => res.json(geocoder))
     .catch(err => {
-      return res.status(400).send(err);
+      return res.status(404).send(err);
     });
   });
   

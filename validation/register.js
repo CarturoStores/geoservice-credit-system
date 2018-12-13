@@ -11,11 +11,11 @@ module.exports = function validateRegisterInput(data) {
   data.password2 = !isEmpty(data.password2) ? data.password2 : '';
 
   if (!Validator.isLength(data.firstName, { min: 2, max: 10 })) {
-    errors.firstName = 'Name must be between 2 and 10 characters';
+    errors.firstName = 'First Name must be between 2 and 10 characters';
   }
 
   if (!Validator.isLength(data.lastName, { min: 2, max: 10 })) {
-    errors.lastName = 'Name must be between 2 and 10 characters';
+    errors.lastName = 'Last Name must be between 2 and 10 characters';
   }
 
   if (Validator.isEmpty(data.firstName)) {
@@ -26,12 +26,12 @@ module.exports = function validateRegisterInput(data) {
     errors.lastName = 'Last Name field is required';
   }
 
-  if (Validator.isEmpty(data.email)) {
-    errors.email = 'Email field is required';
-  }
-
   if (!Validator.isEmail(data.email)) {
     errors.email = 'Email is invalid';
+  }
+
+  if (Validator.isEmpty(data.email)) {
+    errors.email = 'Email field is required';
   }
 
   if (Validator.isEmpty(data.password)) {
