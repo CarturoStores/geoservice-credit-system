@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import GoogleMapReact from 'google-map-react'
+import GoogleMapReact from 'google-maps-react'
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
 

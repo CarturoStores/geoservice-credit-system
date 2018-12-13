@@ -1,0 +1,11 @@
+export const GET_ERRORS = 'GET_ERRORS';
+export const CLEAR_ERRORS = 'CLEAR_ERRORS';
+export const SET_CURRENT_USER = 'SET_CURRENT_USER';
+export const GET_CREDIT = 'GET_CREDIT';
+export const POST_CREDIT = 'POST_CREDIT';
+export const DELETE_CREDIT = 'DELETE_CREDIT';
+export const CREDIT_LOADING = 'PROFILE_LOADING';
+export const CREDIT_NOT_FOUND = 'CREDIT_NOT_FOUND';
+export const CLEAR_CURRENT_CREDIT = 'CLEAR_CURRENT_CREDIT';
+export const GET_CREDITS = 'GET_CREDITS';
+export const POST_LOADING = 'POST_LOADING';
