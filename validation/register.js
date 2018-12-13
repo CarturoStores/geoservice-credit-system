@@ -18,8 +18,12 @@ module.exports = function validateRegisterInput(data) {
     errors.lastName = 'Name must be between 2 and 10 characters';
   }
 
-  if (Validator.isEmpty(data.name)) {
-    errors.name = 'Name field is required';
+  if (Validator.isEmpty(data.firstName)) {
+    errors.firstName = 'First Name field is required';
+  }
+
+  if (Validator.isEmpty(data.lastName)) {
+    errors.lastName = 'Last Name field is required';
   }
 
   if (Validator.isEmpty(data.email)) {
