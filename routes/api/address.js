@@ -3,24 +3,31 @@ require('dotenv').config({
   });
   const express = require('express');
   const router = express.Router();
+  const Sequelize = require('sequelize');
   const db = require('../../models');
 
   // Another alternative querying gooapis
   const requestify = require('requestify');
   
+  // Load Input Validation
+  const validateGeocoderInput = require('../../validation/validate');
+
+  // Load User model
+  const Geocoder = db.Geocoder;
+
   // @route   GET api/address/test
   // @desc    Testing Address routes
   // @access  Public
   router.get('/test', (req, res) => {
     res.json({
-      msg: 'Router works'
+      msg: 'Address Router works'
     })
   });
 
   // @route   GET api/address/geocode
   // @desc    Receiving Geocoding data
   // @access  Public
-  router.get('/geocode', (request, response) => {
+  router.get('/:id', (request, response) => {
     const address = request.body.address;
     const api_key = request.body.api_key;
     urlBase = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${api_key || process.env.API_KEY}`;
@@ -37,8 +44,21 @@ require('dotenv').config({
   // @route   POST api/address/geocode
   // @desc    Storing a new geocode record
   // @access  Public
-  router.post('/geocode', (req, res) => {
-    db.Geocoder.create(Object.assign(req.body,{
+  router.post('/create', async (req, res) => {
+
+    const find = {
+      zip_code: req.body.zip_code,
+      state: req.body.state
+    };
+
+    const { errors, isValid } = validateGeocoderInput(req.body);
+
+    // check validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    db.Geocoder.findOrCreate({ where: find, defaults: Object.assign(req.body,{
       address: req.body.address, // receive complete address
       token: 'token', // generate Token
       zip_code: req.body.zip_code, // zipCode
@@ -47,11 +67,9 @@ require('dotenv').config({
       state: req.body.state, // state
       street_number: req.body.street_number, // street number
       createdAt: Date.now() // created date
-    }))
+    })})
     .then(geocoder => res.json(geocoder))
-    .catch(err => {
-      return res.status(404).send(err);
-    });
+    .catch(err => console.log(err));
   });
 
   // @route   GET api/address/all

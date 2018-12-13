@@ -2,8 +2,12 @@ import axios from "axios";
 
 export default {
   // Gets all geocoding address
-  getAddress: function() {
-    return axios.get("/api/address/geocode");
+  getAllAddress: function() {
+    return axios.get("/api/address/all");
+  },
+  // Gets each geocoding address
+  getOneAddress: function() {
+    return axios.get("/api/address/:id");
   },
   // Gets all users
   getUsers: function() {

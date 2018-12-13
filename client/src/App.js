@@ -10,6 +10,15 @@ import store from './store';
 import PrivateRoute from './components/common/PrivateRoute';
 
 import Navbar from './components/layout/Navbar';
+// import Footer from './components/layout/Footer';
+// import Landing from './components/layout/Landing';
+// import Dashboard from './components/dashboard/Dashboard';
+// import AddCredit from './components/add-credit/AddLocation';
+// import EditCredit from './components/edit-credit/EditCredit';
+// import AddLocation from './components/add-location/AddLocation';
+// import Login from './components/auth/Login';
+// import Login2 from './components/auth/Login2';
+// import NotFound from './components/not-found/NotFound';
 
 import './App.css';
 
