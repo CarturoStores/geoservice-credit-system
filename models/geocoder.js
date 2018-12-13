@@ -2,9 +2,9 @@
 module.exports = (sequelize, DataTypes) => {
   const Geocoder = sequelize.define('Geocoder', {
     address: DataTypes.STRING,
-    zipcode: DataTypes.INTEGER,
-    latitude: DataTypes.STRING,
-    longitude: DataTypes.STRING,
+    zip_code: DataTypes.INTEGER,
+    latitude: DataTypes.FLOAT,
+    longitude: DataTypes.FLOAT,
     state: DataTypes.STRING,
     street_number: DataTypes.INTEGER,
     token: DataTypes.STRING

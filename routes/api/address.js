@@ -42,8 +42,8 @@ require('dotenv').config({
       address: req.body.address, // receive complete address
       token: 'token', // generate Token
       zip_code: req.body.zip_code, // zipCode
-      latitude: req.body.lat, // latitude
-      longitude: req.body.lng, // longitude
+      latitude: req.body.latitude, // latitude
+      longitude: req.body.longitude, // longitude
       state: req.body.state, // state
       street_number: req.body.street_number, // street number
       createdAt: Date.now() // created date
