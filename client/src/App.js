@@ -11,13 +11,15 @@ import PrivateRoute from './components/common/PrivateRoute';
 
 import Navbar from './components/layout/Navbar';
 // import Footer from './components/layout/Footer';
-// import Landing from './components/layout/Landing';
-// import Dashboard from './components/dashboard/Dashboard';
-// import AddCredit from './components/add-credit/AddLocation';
+import Landing from './components/layout/Landing';
+import Dashboard from './components/dashboard/Dashboard';
+import CreateProfile from './components/create-profile/CreateProfile';
 // import EditCredit from './components/edit-credit/EditCredit';
 // import AddLocation from './components/add-location/AddLocation';
-// import Login from './components/auth/Login';
-// import Login2 from './components/auth/Login2';
+import Login from './components/auth/Login';
+import Login2 from './components/auth/Login2';
+import Profiles from "./components/profiles/Profiles";
+import Profile from "./components/profile/Profile";
 // import NotFound from './components/not-found/NotFound';
 
 import './App.css';
@@ -41,6 +43,23 @@ class App extends Component {
         <Router>
           <div className="App">
             <Navbar />
+            <Route exact path="/" component={Landing} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/login2" component={Login2} />
+            <div className="container">
+              <Route exact path="/profiles" component={Profiles} />
+              <Route exact path="/profile/:handle" component={Profile} />
+              <Switch>
+                <PrivateRoute exact path="/dashboard" component={Dashboard} />
+              </Switch>
+              <Switch>
+                <PrivateRoute
+                  exact
+                  path="/create-profile"
+                  component={CreateProfile}
+                />
+              </Switch>
+            </div>
           </div>
         </Router>
       </Provider>
