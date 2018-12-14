@@ -10,7 +10,7 @@ export default {
   },
   // Gets each geocoding address
   getOneAddress: function() {
-    return axios.get("/api/address/get");
+    return axios.get("/api/address/");
   },
   // Create a address or location
   createAnAddress: function() {
