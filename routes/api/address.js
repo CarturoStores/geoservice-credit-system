@@ -14,7 +14,7 @@ require('dotenv').config({
 
   // Load User model
   const Geocoder = db.Geocoder;
-  var NodeGeocoder = require('node-geocoder');
+  const NodeGeocoder = require('node-geocoder');
  
   const options = {
     provider: 'google',
@@ -24,7 +24,7 @@ require('dotenv').config({
     formatter: null               // 'gpx', 'string', ...
   };
  
-var google = NodeGeocoder(options);
+  const google = NodeGeocoder(options);
 
   // batch multiple geocoding addresses services excersices
   
