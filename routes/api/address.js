@@ -1,7 +1,6 @@
 require('dotenv').config({
     silent: true
   });
-  const google = require('node-geocoder');
   const express = require('express');
   const router = express.Router();
   const passport = require("passport");
@@ -15,28 +14,19 @@ require('dotenv').config({
 
   // Load User model
   const Geocoder = db.Geocoder;
+  var NodeGeocoder = require('node-geocoder');
+ 
+  const options = {
+    provider: 'google',
+    // Optional depending on the providers
+    httpAdapter: 'https',         // Default
+    apiKey: process.env.API_KEY,  // for Mapquest, OpenCage, Google Premier
+    formatter: null               // 'gpx', 'string', ...
+  };
+ 
+var google = NodeGeocoder(options);
 
-  // batch multiple geocoding addresses services
-  getMultiplesAddress = (addresses, done) => {
-    let coords = [];
-
-    addresses.forEach(address => {
-      const geocoder = new google.maps.Geocoder();
-      if (geocoder) {
-        geocoder.geocode({'address':address}, (results, status) => {
-          if (status == google.maps.GeocoderStatus.OK) {
-            coords.push(results[0].geometry.location);
-            if( typeof done == 'function' ) {
-              done();
-            }
-          } 
-          else {
-            throw('No results found: ' + status);
-          }
-        });
-      }
-    });
-  }
+  // batch multiple geocoding addresses services excersices
   
   //Usage
   // @route   GET api/address/all
@@ -44,9 +34,17 @@ require('dotenv').config({
   // @access  Public
   router.get('/all', passport.authenticate("jwt", { session: false }), async (req, res) => {
     // Do something after getting done with Geocoding of multiple addresses
-    Geocoder.findAll()
-      .then(addressList => res.json(addressList))
-      .catch(err => res.status(404).json({ errors: 'Error Have Been Occurred'}));
+    let addresses = [];
+    addresses.push(req.body.address1);
+    addresses.push(req.body.address2);
+    google.batchGeocode(addresses, (err, results) => {
+      // Return an array of type {error: false, value: []}
+      if (results) {      
+        res.json(results)
+      } else {
+        res.status(404).json({ error: 'Batch Geocoder failed'})
+      }
+    });
   });
   
   // @route   GET api/address/test
