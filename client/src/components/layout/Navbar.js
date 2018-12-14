@@ -8,7 +8,7 @@ import login from '../../img/enter-50.png';
 import logout from '../../img/exit-filled-50.png';
 import dashboard from '../../img/dashboard-50.png';
 import feed from '../../img/feed-up-down-50.png';
-import logo from '../../img/user-50.png';
+import logo from '../../img/avatar-name-50.png';
 
 import { logoutUser } from '../../actions/userAuthActions';
 
@@ -97,7 +97,7 @@ class Navbar extends Component {
           <Link className="navbar-brand" to="/">
             <img
               src={logo}
-              style={{ width: "190px", margin: "auto", display: "block" }}
+              style={{ width: "80px", margin: "auto", display: "inline-block" }}
               alt="Loading..."
             />
           </Link>
