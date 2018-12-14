@@ -2,6 +2,9 @@
 
 ## Node.js Technical Assessment
 
+What you need to know before run:
++ You need to authenticate your platform with a new  Bearer `token` passed as `Authentication` header from Postman and exe it.
+
 Objectives
 ### 1. Create a REST API that has 2 services
 #### a. Service 1
