@@ -22,7 +22,7 @@ Objectives
 + 2. ~~Timestamp~~
 + 3. ~~Token~~ (for credits)
 ##### iii. Output(s)
-+ 1. Return Google’s response
++ 1. ~~Return Google’s response~~
 ##### iv. (Advanced) Uses 2 credit per call
 
 ### 2. (Advanced) Build a credit system
@@ -31,5 +31,5 @@ Objectives
 + ii. Plan 2 - 20 Credits / Month
 + iii. Plan 3 - 30 Credits / Month
 #### b. Batch Services
-+ i. Geocoding batch service that handles multiple addresses with a POST
-body (i.e. 50 addresses get batched to Google 5 at a time).
++ i. ~~Geocoding batch service that handles multiple addresses with a POST
+body~~ (i.e. 50 addresses get batched to Google 5 at a time).
