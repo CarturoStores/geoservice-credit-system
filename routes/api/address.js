@@ -17,7 +17,7 @@ require('dotenv').config({
   const Geocoder = db.Geocoder;
 
   // batch multiple geocoding addresses services
-  multipleGeocodes = (addresses, done) => {
+  getMultiplesAddress = (addresses, done) => {
     let coords = [];
 
     addresses.forEach(address => {
