@@ -17,7 +17,7 @@ class Footer extends Component {
           width: "100%"
         }}
       >
-        Copyright &copy; {new Date().getFullYear()} Google Georservice
+        Copyright &copy; {new Date().getFullYear()} Google Geoservice
       </footer>
     );
   }
