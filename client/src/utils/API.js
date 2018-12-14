@@ -1,6 +1,9 @@
 import axios from "axios";
 
 export default {
+  getKey: function() {
+    return process.env.API_KEY;
+  },
   // Gets all geocoding address
   getAllAddress: function() {
     return axios.get("/api/address/all");
