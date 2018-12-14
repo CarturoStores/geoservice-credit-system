@@ -1,8 +1,8 @@
 # Geoservice-credit-system
 Geo service credit system. Fullstack Web Development
 
-# What's branded?
-Branded is a movie repository website for storing movie collections like you've never see it before.
+# What's Credit Geoservice?
+It is a geolocation system for credit and campaign website for storing geocoding address and profiles like you've never see it before.
 
 # Live Demo
 * Heroku: https://geocoder-service.herokuapp.com/
@@ -13,6 +13,7 @@ This project uses the following:
 * Sequelize ORM
 * MySQL2
 * Node JS - Express
+* React - Redux
 * React Google Maps
 * CSS - Sass
 * Postman
