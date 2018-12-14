@@ -102,9 +102,8 @@ router.post('/login', (req, res) => {
           if (isMatch) {
             //User matched
             const payload = { 
-              id: user.id, 
-              firstName: user.firstName, 
-              lastName: user.lastName,
+              id: user.id,
+              name: user.name,
               avatar: user.avatar
             }; // create JWT payload
 
@@ -116,7 +115,7 @@ router.post('/login', (req, res) => {
               (_, token) => {
                 res.json({
                   success: true,
-                  toke: 'Bearer ' + token
+                  token: 'Bearer ' + token
                 });
               }
             );
@@ -134,8 +133,7 @@ router.post('/login', (req, res) => {
 router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.json({
     id: req.user.id,
-    firstName: req.user.firstName,
-    lastName: req.user.lastName,
+    name: req.user.name,
     email: req.user.email
   });
 });
