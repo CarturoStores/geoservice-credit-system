@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Map, InfoWindow, Market, GoogleMapReact } from 'google-maps-react'
+import API from '../../utils/API';
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
 

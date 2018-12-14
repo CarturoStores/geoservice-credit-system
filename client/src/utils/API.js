@@ -7,11 +7,11 @@ export default {
   },
   // Gets each geocoding address
   getOneAddress: function() {
-    return axios.get("/api/address/:id");
+    return axios.get("/api/address/get");
   },
-  // Gets all users
-  getUsers: function() {
-    return axios.get("/api/users/");
+  // Create a address or location
+  createAnAddress: function() {
+    return axios.get("/api/address/create");
   },
   // Token setup
   setAuthToken: token => {

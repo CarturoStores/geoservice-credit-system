@@ -27,7 +27,7 @@ require('dotenv').config({
   // @route   GET api/address/geocode
   // @desc    Receiving Geocoding data
   // @access  Public
-  router.get('/:id', (request, response) => {
+  router.get('/get', (request, response) => {
     const address = request.body.address;
     const api_key = request.body.api_key;
     urlBase = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${api_key || process.env.API_KEY}`;
