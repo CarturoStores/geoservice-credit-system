@@ -34,13 +34,13 @@ var google = NodeGeocoder(options);
   // @access  Public
   router.get('/all', passport.authenticate("jwt", { session: false }), async (req, res) => {
     // Do something after getting done with Geocoding of multiple addresses
-    let addresses = [];
-    addresses.push(req.body.address1);
-    addresses.push(req.body.address2);
+    let addresses = req.body.addresses.split('\n');
     google.batchGeocode(addresses, (err, results) => {
       // Return an array of type {error: false, value: []}
       if (results) {      
-        res.json(results)
+        res.json({
+          addresses: results
+        })
       } else {
         res.status(404).json({ error: 'Batch Geocoder failed'})
       }
