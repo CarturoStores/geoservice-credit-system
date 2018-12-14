@@ -24,10 +24,10 @@ require('dotenv').config({
     })
   });
 
-  // @route   GET api/address/geocode
+  // @route   GET api/address/geocode/
   // @desc    Receiving Geocoding data
   // @access  Public
-  router.get('/', passport.authenticate("jwt", { session: false }), (request, response) => {
+  router.get('/geocode/', passport.authenticate("jwt", { session: false }), (request, response) => {
     const address = request.body.address;
     const api_key = request.body.api_key;
     urlBase = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${api_key || process.env.API_KEY}`;
@@ -35,6 +35,28 @@ require('dotenv').config({
       .then(res => {
         const result = res.getBody();
         response.json({ currentGeoLocation: result });
+      })
+      .catch(err => {
+        return res.status(404).json({ err: 'Unexpected Error Ocurred' });
+      });
+  });
+
+  // @route   GET api/address/timeazone/
+  // @desc    Receiving Google Time Zone
+  // @access  Public
+  router.get('/timezone/', passport.authenticate("jwt", { session: false }), (request, response) => {
+    const location = {
+      lat: request.body.lat,
+      lng: request.body.lng
+    };
+    const timestamp = request.body.timestamp;
+    const api_key = request.body.api_key;
+    // const location = '39.6034810,-119.6822510';
+    urlBase = `https://maps.googleapis.com/maps/api/timezone/json?location=${location.lat},${location.lng}&timestamp=${timestamp}&key=${api_key || process.env.API_KEY}`;
+    requestify.get(urlBase)
+      .then(res => {
+        const result = res.getBody();
+        response.json({ currentGooTimeZone: result });
       })
       .catch(err => {
         return res.status(404).json({ err: 'Unexpected Error Ocurred' });
