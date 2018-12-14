@@ -31,7 +31,7 @@ require('dotenv').config({
   //Usage
   // @route   GET api/address/all
   // @desc    // Finding multiple address
-  // @access  Public
+  // @access  Private
   router.get('/all', passport.authenticate("jwt", { session: false }), async (req, res) => {
     // Do something after getting done with Geocoding of multiple addresses
     let addresses = req.body.addresses.split('\n');
@@ -58,7 +58,7 @@ require('dotenv').config({
 
   // @route   GET api/address/geocode/
   // @desc    Receiving Geocoding data
-  // @access  Public
+  // @access  Private
   router.get('/geocode/', passport.authenticate("jwt", { session: false }), async (request, response) => {
     const address = request.body.address;
     const api_key = request.body.api_key;
@@ -75,7 +75,7 @@ require('dotenv').config({
 
   // @route   GET api/address/timezone/
   // @desc    Receiving Google Time Zone
-  // @access  Public
+  // @access  Private
   router.get('/timezone/', passport.authenticate("jwt", { session: false }), async (request, response) => {
     const location = {
       lat: request.body.lat,
@@ -97,7 +97,7 @@ require('dotenv').config({
 
   // @route   POST api/address/geocode
   // @desc    Storing a new geocode record
-  // @access  Public
+  // @access  Private
   router.post('/create', passport.authenticate("jwt", { session: false }), async (req, res) => {
 
     const find = {
