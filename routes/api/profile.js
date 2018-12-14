@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const Profile = require("../../models/Profile");
-const User = require("../../models/User");
+const Profile = require("../../models").Profile;
+const User = require("../../models").User;
 
 //Validation filed
 const validateProfileInput = require("../../validation/profile");
@@ -117,7 +117,7 @@ router.get("/handle/:handle", (req, res) => {
 router.get("/user/:user_id", (req, res) => {
   const errors = {};
 
-  Profile.findOne({ user: req.params.user_id })
+  Profile.findOne({ where: { user: req.params.user_id }})
     .populate("user", ["name", "avatar"])
     .then(profile => {
       if (!profile) {
@@ -165,7 +165,7 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    Profile.findOne({ user: req.user.id }).then(profile => {
+    Profile.findOne({ where: { user: req.user.id }}).then(profile => {
       const newLocation = {
         location: req.body.location,
         from: req.body.from,
@@ -241,7 +241,7 @@ router.delete(
   "/appointmentlist/:appointmentlist_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    Profile.findOne({ user: req.user.id })
+    Profile.findOne({ where: { user: req.user.id }})
       .then(profile => {
         //remove index
         const removeAppointmentListItem = profile.appointmentlist
