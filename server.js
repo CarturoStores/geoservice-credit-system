@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 5000;
 
 // DB config
 db.sequelize.sync()
