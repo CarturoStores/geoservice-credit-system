@@ -7,6 +7,9 @@ const users = require('./routes/api/users.js');
 const address = require('./routes/api/address.js');
 const app = express();
 const passport = require('passport');
+const morgan = require('morgan');
+
+app.use(morgan("tiny")); // logging framework
 
 // Body parser middleware
 app.use(bodyParser.urlencoded({extended: true}));
