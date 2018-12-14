@@ -12,7 +12,7 @@ require('dotenv').config({
   // Load Input Validation
   const validateGeocoderInput = require('../../validation/validate');
 
-  // Load User model
+  // Load Geocoding model
   const Geocoder = db.Geocoder;
   const NodeGeocoder = require('node-geocoder');
  
