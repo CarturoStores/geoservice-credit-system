@@ -1,6 +1,7 @@
 require('dotenv').config({
     silent: true
   });
+  const google = require('node-geocoder');
   const express = require('express');
   const router = express.Router();
   const passport = require("passport");
@@ -15,6 +16,39 @@ require('dotenv').config({
   // Load User model
   const Geocoder = db.Geocoder;
 
+  // batch multiple geocoding addresses services
+  multipleGeocodes = (addresses, done) => {
+    let coords = [];
+
+    addresses.forEach(address => {
+      const geocoder = new google.maps.Geocoder();
+      if (geocoder) {
+        geocoder.geocode({'address':address}, (results, status) => {
+          if (status == google.maps.GeocoderStatus.OK) {
+            coords.push(results[0].geometry.location);
+            if( typeof done == 'function' ) {
+              done();
+            }
+          } 
+          else {
+            throw('No results found: ' + status);
+          }
+        });
+      }
+    });
+  }
+  
+  //Usage
+  // @route   GET api/address/all
+  // @desc    // Finding multiple address
+  // @access  Public
+  router.get('/all', passport.authenticate("jwt", { session: false }), async (req, res) => {
+    // Do something after getting done with Geocoding of multiple addresses
+    Geocoder.findAll()
+      .then(addressList => res.json(addressList))
+      .catch(err => res.status(404).json({ errors: 'Error Have Been Occurred'}));
+  });
+  
   // @route   GET api/address/test
   // @desc    Testing Address routes
   // @access  Public
@@ -27,7 +61,7 @@ require('dotenv').config({
   // @route   GET api/address/geocode/
   // @desc    Receiving Geocoding data
   // @access  Public
-  router.get('/geocode/', passport.authenticate("jwt", { session: false }), (request, response) => {
+  router.get('/geocode/', passport.authenticate("jwt", { session: false }), async (request, response) => {
     const address = request.body.address;
     const api_key = request.body.api_key;
     urlBase = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${api_key || process.env.API_KEY}`;
@@ -44,7 +78,7 @@ require('dotenv').config({
   // @route   GET api/address/timezone/
   // @desc    Receiving Google Time Zone
   // @access  Public
-  router.get('/timezone/', passport.authenticate("jwt", { session: false }), (request, response) => {
+  router.get('/timezone/', passport.authenticate("jwt", { session: false }), async (request, response) => {
     const location = {
       lat: request.body.lat,
       lng: request.body.lng
@@ -80,7 +114,7 @@ require('dotenv').config({
       return res.status(400).json(errors);
     }
 
-    db.Geocoder.findOrCreate({ where: find, defaults: Object.assign(req.body,{
+    Geocoder.findOrCreate({ where: find, defaults: Object.assign(req.body,{
       address: req.body.address, // receive complete address
       token: 'token', // generate Token
       zip_code: req.body.zip_code, // zipCode
@@ -92,16 +126,6 @@ require('dotenv').config({
     })})
     .then(geocoder => res.json(geocoder))
     .catch(err => console.log(err));
-  });
-
-  // @route   GET api/address/all
-  // @desc    // Finding multiple entries
-  // @access  Public
-  router.get('/all', passport.authenticate("jwt", { session: false }), (req, res) => {
-    // address will be an array of all Geocoder instances
-    db.Geocoder.findAll()
-      .then(addressList => res.json(addressList))
-      .catch(err => res.status(404).json({ errors: 'Error Have Been Occurred'}));
   });
   
   module.exports = router;
