@@ -5,6 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const users = require('./routes/api/users.js');
 const address = require('./routes/api/address.js');
+const profile = require('./routes/api/profile');
 const app = express();
 const passport = require('passport');
 const morgan = require('morgan');
@@ -27,6 +28,7 @@ require('./config/passport')(passport);
 //Use Routes
 app.use('/api/users', users);
 app.use('/api/address', address);
+app.use('/api/profile', profile);
 
 
 // Serve up static assets (usually on heroku)
