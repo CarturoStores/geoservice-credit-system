@@ -3,7 +3,7 @@ require('dotenv').config({
   });
   const express = require('express');
   const router = express.Router();
-  const Sequelize = require('sequelize');
+  const passport = require("passport");
   const db = require('../../models');
 
   // Another alternative querying gooapis
@@ -27,7 +27,7 @@ require('dotenv').config({
   // @route   GET api/address/geocode
   // @desc    Receiving Geocoding data
   // @access  Public
-  router.get('/', (request, response) => {
+  router.get('/', passport.authenticate("jwt", { session: false }), (request, response) => {
     const address = request.body.address;
     const api_key = request.body.api_key;
     urlBase = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${api_key || process.env.API_KEY}`;
@@ -44,7 +44,7 @@ require('dotenv').config({
   // @route   POST api/address/geocode
   // @desc    Storing a new geocode record
   // @access  Public
-  router.post('/create', async (req, res) => {
+  router.post('/create', passport.authenticate("jwt", { session: false }), async (req, res) => {
 
     const find = {
       zip_code: req.body.zip_code,
@@ -75,7 +75,7 @@ require('dotenv').config({
   // @route   GET api/address/all
   // @desc    // Finding multiple entries
   // @access  Public
-  router.get('/all', (req, res) => {
+  router.get('/all', passport.authenticate("jwt", { session: false }), (req, res) => {
     // address will be an array of all Geocoder instances
     db.Geocoder.findAll()
       .then(addressList => res.json(addressList))

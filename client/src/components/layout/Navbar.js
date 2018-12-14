@@ -16,7 +16,7 @@ class Navbar extends Component {
 
   onLogoutClick(e) {
     e.preventDefault();
-    this.props.clogoutUser();
+    this.props.logoutUser();
   }
 
   render() {
