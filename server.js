@@ -9,8 +9,11 @@ const profile = require('./routes/api/profile');
 const app = express();
 const passport = require('passport');
 const morgan = require('morgan');
+const cors = require('cors');
 
 app.use(morgan("tiny")); // logging framework
+
+app.use(cors());
 
 // Body parser middleware
 app.use(bodyParser.urlencoded({extended: true}));
