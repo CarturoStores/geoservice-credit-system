@@ -41,7 +41,7 @@ require('dotenv').config({
       });
   });
 
-  // @route   GET api/address/timeazone/
+  // @route   GET api/address/timezone/
   // @desc    Receiving Google Time Zone
   // @access  Public
   router.get('/timezone/', passport.authenticate("jwt", { session: false }), (request, response) => {
