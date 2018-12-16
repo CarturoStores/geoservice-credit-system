@@ -36,6 +36,7 @@ class Visited extends Component {
           <img
             src={credit_card}
             style={{ width: "35px", margin: "auto", display: "round" }}
+            alt=''
           />My Trips
         </h4>
         <table className="text-center table">
@@ -45,6 +46,7 @@ class Visited extends Component {
                 <img
                   src={map}
                   style={{ width: "35px", margin: "auto", display: "round" }}
+                  alt=''
                 />
                 Location
               </th>
@@ -52,6 +54,7 @@ class Visited extends Component {
                 <img
                   src={calander}
                   style={{ width: "35px", margin: "auto", display: "round" }}
+                  alt=''
                 />
                 Dates Appointment
               </th>

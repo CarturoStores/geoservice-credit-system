@@ -16,14 +16,25 @@ module.exports = (sequelize, DataTypes) => {
       values: ['active', 'pending', 'deleted']
     },
     visited: {
-      type: DataTypes.ENUM,
-      values: ['visited', 'no visited', 'pending']
+      type: DataTypes.STRING
     },  
     appointmentlist: {
-      type: DataTypes.ENUM,
-      values: ['done', 'pending', 'cancel']
+      type: DataTypes.STRING
     },
-  }, {});
+  }, {
+    getterVisited() {
+      return this.getDataValue('visited').split(';')
+    },
+    setterVisited(val) {
+      this.setDataValue('visited',val.join(';'));
+    },
+    getterAppointmentList() {
+      return this.getDataValue('appointmentlist').split(';')
+    },
+    setterAppointmentList(val) {
+      this.setDataValue('appointmentlist',val.join(';'));
+    },
+  });
   Profile.associate = function(models) {
     // associations can be defined here
     Profile.belongsTo(models.User, {
