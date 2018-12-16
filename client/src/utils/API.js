@@ -4,15 +4,19 @@ export default {
   getKey: function() {
     return process.env.API_KEY;
   },
-  // Gets all geocoding address
+  // Gets all geocoding address per call
   getAllAddress: function() {
     return axios.get("/api/address/all");
   },
-  // Gets each geocoding address
+  // Gets each geocoding address per call
   getOneAddress: function() {
-    return axios.get("/api/address/");
+    return axios.get("/api/address/geocode/");
   },
-  // Create a address or location
+  // Gets google timezone address per call
+  getTimeZoneAddress: function() {
+    return axios.get("/api/address/timezone/");
+  },
+  // Create a address or location per cll
   createAnAddress: function() {
     return axios.get("/api/address/create");
   },

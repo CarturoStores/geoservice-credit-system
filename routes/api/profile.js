@@ -20,13 +20,12 @@ router.get("/test", (req, res) => res.json({ msg: "Profile Routes Works" }));
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     errors = {};
 
     Profile.findOne({
-      where: { user: req.user.id }
+      where: { userId: req.user.id }
     })
-      .populate("user", ["name", "avatar"])
       .then(profile => {
         if (!profile) {
           errors.noprofile = "There is no profile for this user";
@@ -44,7 +43,7 @@ router.get(
 router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     const { errors, isValid } = validateProfileInput(req.body);
 
     // Check Validation
@@ -55,7 +54,7 @@ router.post(
 
     // Get fields
     const profileFields = {};
-    profileFields.user = req.user.id;
+    profileFields.userId = req.user.id;
     if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.location) profileFields.location = req.body.location;
     if (req.body.bio) profileFields.bio = req.body.bio;
@@ -66,28 +65,30 @@ router.post(
     if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
     if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
     if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
+    console.log(JSON.stringify(profileFields));
 
-    Profile.findOne({ user: req.user.id }).then(profile => {
+    Profile.findOne({ where: { userId: req.user.id }}).then(profile => {
       if (profile) {
         // Update Profile if one exists
-        Profile.findOneAndUpdate(
-          { user: req.user.id },
-          { $set: profileFields },
-          { new: true }
-        ).then(profile => res.json(profile));
+        Profile.findOrCreate({where: { userId: req.user.id }, 
+          defaults: Obbject.assign(req.body, profileFields)})
+          .then(profile => res.json(profile))
+          .catch(err => console.log(err));
       } else {
         // Create Profile if one does not exist
 
         // Check if handle exists
-        Profile.findOne({ handle: profileFields.handle }).then(profile => {
-          if (profile) {
-            errors.handle = "That handle already exists";
-            res.status(400).json(errors);
-          }
-
-          // Save Profile if handle is open
-          new Profile(profileFields).save().then(profile => res.json(profile));
-        });
+        Profile.findOne({ where: { handle: profileFields.handle }})
+          .then(profile => {
+            if (profile) {
+              errors.handle = "That handle already exists";
+              res.status(400).json(errors);
+            }
+            // Save Profile if handle is open
+            Profile.create(Object.assign(req.body, profileFields))
+              .then(profile => res.json(profile))
+              .catch(() => res.status(404).json({ err: 'Unexpected Error Ocurred'}));
+          });
       }
     });
   }
@@ -99,8 +100,7 @@ router.post(
 router.get("/handle/:handle", (req, res) => {
   const errors = {};
 
-  Profile.findOne({ handle: req.params.handle })
-    .populate("user", ["name", "avatar"])
+  Profile.findOne({ where: { handle: req.params.handle }})
     .then(profile => {
       if (!profile) {
         errors.noprofile = "There is no profile for the specified user";
@@ -117,8 +117,7 @@ router.get("/handle/:handle", (req, res) => {
 router.get("/user/:user_id", (req, res) => {
   const errors = {};
 
-  Profile.findOne({ where: { user: req.params.user_id }})
-    .populate("user", ["name", "avatar"])
+  Profile.findOne({ where: { userId: req.params.user_id }})
     .then(profile => {
       if (!profile) {
         errors.noprofile = "There is no profile for the specified user";
@@ -137,8 +136,7 @@ router.get("/user/:user_id", (req, res) => {
 
 router.get("/all", (req, res) => {
   const errors = {};
-  Profile.find()
-    .populate("user", ["name", "avatar"])
+  Profile.findAll()
     .then(profiles => {
       if (!profiles) {
         errors.profiles = "There are no profiles";
@@ -165,7 +163,7 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    Profile.findOne({ where: { user: req.user.id }}).then(profile => {
+    Profile.findOne({ where: { userId: req.user.id }}).then(profile => {
       const newLocation = {
         location: req.body.location,
         from: req.body.from,
@@ -195,7 +193,7 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    Profile.findOne({ where: { user: req.user.id }}).then(profile => {
+    Profile.findOne({ where: { userId: req.user.id }}).then(profile => {
       const newLocation = {
         location: req.body.location,
         date: req.body.date,
@@ -217,7 +215,7 @@ router.delete(
   "/visited/:visited_id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    Profile.findOne({ where: { user: req.user.id }})
+    Profile.findOne({ where: { userId: req.user.id }})
       .then(profile => {
         //remove index
         const removeVisitedItem = profile.visited
@@ -266,8 +264,8 @@ router.delete(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    Profile.findOneAndRemove({ where: { user: req.user.id }}).then(() => {
-      User.findOneAndRemove({ where: { _id: req.user.id }}).then(() =>
+    Profile.findOneAndRemove({ where: { userId: req.user.id }}).then(() => {
+      User.findOneAndRemove({ where: { userId: req.user.id }}).then(() =>
         res.json({ success: true })
       );
     });

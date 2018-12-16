@@ -11,19 +11,28 @@ module.exports = (sequelize, DataTypes) => {
     social: {
       type: DataTypes.JSON
     },
-    facebook: DataTypes.STRING,
-    instagram: DataTypes.STRING,
-    visited: {
+    status: {
       type: DataTypes.ENUM,
       values: ['active', 'pending', 'deleted']
     },
+    visited: {
+      type: DataTypes.ENUM,
+      values: ['visited', 'no visited', 'pending']
+    },  
     appointmentlist: {
       type: DataTypes.ENUM,
-      values: ['active', 'pending', 'deleted']
+      values: ['done', 'pending', 'cancel']
     },
   }, {});
   Profile.associate = function(models) {
     // associations can be defined here
+    Profile.belongsTo(models.User, {
+      as: "User",
+      foreignKey: {
+        name: 'userId',
+        allowNull: false
+      }
+    });
   };
   return Profile;
 };
