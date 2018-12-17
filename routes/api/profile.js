@@ -229,18 +229,11 @@ router.delete(
   async (req, res) => {
     Profile.findOne({ where: { userId: req.user.id }})
       .then(profile => {
-        //remove index
-        const removeVisitedItem = profile.visited
-          .map(item => item.id)
-          .indexOf(req.params.visited_id);
-
-        //splice out of array
-        profile.visited.destroy(removeVisitedItem, 1);
-
-        //save
-        profile.save().then(profile => res.json(profile));
+        //reset visited field
+        profile.update({visited: null})
+          .then(res.json(profile))
+          .catch(err => res.status(404).json(err));
       })
-      .catch(err => res.status(404).json(err));
   }
 );
 
@@ -251,20 +244,13 @@ router.delete(
   "/appointmentlist/:appointmentlist_id",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    Profile.findOne({ where: { user: req.user.id }})
+    Profile.findOne({ where: { userId: req.user.id }})
       .then(profile => {
-        //remove index
-        const removeAppointmentListItem = profile.appointmentlist
-          .map(item => item.id)
-          .indexOf(req.params.appointmentlist_id);
-
-        //splice out of array
-        profile.appointmentlist.destroy(removeAppointmentListItem, 1);
-
-        //save
-        profile.save().then(profile => res.json(profile));
+        //reset visited field
+        profile.update({appointmentlist: null})
+          .then(res.json(profile))
+          .catch(err => res.status(404).json(err));
       })
-      .catch(err => res.status(404).json(err));
   }
 );
 
