@@ -71,7 +71,7 @@ router.post(
       if (profile) {
         // Update Profile if one exists
         Profile.findOrCreate({where: { userId: req.user.id }, 
-          defaults: Obbject.assign(req.body, profileFields)})
+          defaults: Object.assign(req.body, profileFields)})
           .then(profile => res.json(profile))
           .catch(err => console.log(err));
       } else {
@@ -97,7 +97,7 @@ router.post(
 // @route   GET api/profile/handle/:handle
 // @desc    Get profile with handle
 // @access  Public
-router.get("/handle/:handle", (req, res) => {
+router.get("/handle/:handle", async (req, res) => {
   const errors = {};
 
   Profile.findOne({ where: { handle: req.params.handle }})
@@ -114,7 +114,7 @@ router.get("/handle/:handle", (req, res) => {
 // @route   GET api/profile/user/:user_id
 // @desc    Get profile with user_id
 // @access  Public
-router.get("/user/:user_id", (req, res) => {
+router.get("/user/:user_id", async (req, res) => {
   const errors = {};
 
   Profile.findOne({ where: { userId: req.params.user_id }})
@@ -134,7 +134,7 @@ router.get("/user/:user_id", (req, res) => {
 // @desc    Get all profiles
 // @access  Public
 
-router.get("/all", (req, res) => {
+router.get("/all", async (req, res) => {
   const errors = {};
   Profile.findAll()
     .then(profiles => {
@@ -154,7 +154,7 @@ router.get("/all", (req, res) => {
 router.post(
   "/visited",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     const { errors, isValid } = validateVisitedInput(req.body);
 
     // Check Validation
@@ -163,18 +163,26 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    Profile.findOne({ where: { userId: req.user.id }}).then(profile => {
-      const newLocation = {
-        location: req.body.location,
-        from: req.body.from,
-        to: req.body.to,
-        synopsis: req.body.synopsis
-      };
-      // Add to visited array
-      profile.visited.unshift(newLocation);
-
-      profile.save().then(profile => res.json(profile));
-    });
+    Profile.update({visited: req.body}, { where: { userId: req.user.id }})
+      .then(() => {
+        const newVisit = {
+          location: req.body.location,
+          from: req.body.from,
+          to: req.body.to,
+          synopsis: req.body.synopsis
+        };
+        // Add to visited json obj
+        // visited property will update as newVisit
+         res.json({
+           visits: [{
+            location: newVisit.location,
+            from: newVisit.from,
+            to: newVisit.to,
+            synopsis: newVisit.synopsis
+            }]
+         });
+      })
+      .catch(err => console.log(err));
   }
 );
 
@@ -184,7 +192,7 @@ router.post(
 router.post(
   "/appointmentlist",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     const { errors, isValid } = validateAppointmentListInput(req.body);
 
     // Check Validation
@@ -193,16 +201,20 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    Profile.findOne({ where: { userId: req.user.id }}).then(profile => {
-      const newLocation = {
+    Profile.update({appointmentlist: req.body},{ where: { userId: req.user.id }}).then(profile => {
+      const newAppointment = {
         location: req.body.location,
         date: req.body.date,
         synopsis: req.body.synopsis
       };
-      // Add to exp array
-      profile.appointmentlist.unshift(newLocation);
-
-      profile.save().then(profile => res.json(profile));
+      // Add to exp to array
+      res.json({
+        appointments: [{
+          location: newAppointment.location,
+          date: newAppointment.date,
+          synopsis: newAppointment.synopsis
+          }]
+      })
     });
   }
 );
@@ -214,7 +226,7 @@ router.post(
 router.delete(
   "/visited/:visited_id",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     Profile.findOne({ where: { userId: req.user.id }})
       .then(profile => {
         //remove index
@@ -223,7 +235,7 @@ router.delete(
           .indexOf(req.params.visited_id);
 
         //splice out of array
-        profile.visited.splice(removeVisitedItem, 1);
+        profile.visited.destroy(removeVisitedItem, 1);
 
         //save
         profile.save().then(profile => res.json(profile));
@@ -238,7 +250,7 @@ router.delete(
 router.delete(
   "/appointmentlist/:appointmentlist_id",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     Profile.findOne({ where: { user: req.user.id }})
       .then(profile => {
         //remove index
@@ -247,7 +259,7 @@ router.delete(
           .indexOf(req.params.appointmentlist_id);
 
         //splice out of array
-        profile.appointmentlist.splice(removeAppointmentListItem, 1);
+        profile.appointmentlist.destroy(removeAppointmentListItem, 1);
 
         //save
         profile.save().then(profile => res.json(profile));
@@ -263,12 +275,13 @@ router.delete(
 router.delete(
   "/",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    Profile.findOneAndRemove({ where: { userId: req.user.id }}).then(() => {
-      User.findOneAndRemove({ where: { userId: req.user.id }}).then(() =>
-        res.json({ success: true })
-      );
-    });
+  async (req, res) => {
+    Profile.destroy({ where: { userId: req.user.id }}).then(profile => {
+      return profile.destroy();
+    }).then(res.json({ success: true }));
+    User.destroy({ where: { userId: req.user.id }}).then(user => {
+      return user.destroy();
+    }).then(res.json({ success: true }));
   }
 );
 module.exports = router;
