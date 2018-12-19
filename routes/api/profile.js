@@ -193,6 +193,7 @@ router.post(
 
     // Get fields
     const visitFields = {};
+    if (req.params.visited_id) visitFields.id = parseFloat(req.params.visited_id);
     if (req.body.location) visitFields.location = req.body.location;
     if (req.body.from) visitFields.from = req.body.from;
     if (req.body.to) visitFields.to = req.body.to;
@@ -221,7 +222,7 @@ router.post(
                     visits[i] = Object.assign(this, visitFields);
                   }
                 }
-                res.json(visit);
+                res.json(visits);
               })
               .catch(err => res.status(404).json(err));
           })
@@ -293,25 +294,21 @@ router.delete(
       include: [Visit]
     })
       .then(profile => {
-        let visits = [];
-        Visit.destroy({ 
+        let visits = profile.Visits;
+        const removeVisitedItem = visits
+          .map(item => item.id)
+          .indexOf(req.params.visited_id);
+        Visit.destroy({
           where: { 
-            id: req.params.visited_id 
+            id: req.params.visited_id
           },
           force: true
         })
-          .then(() => {
-            //remove index
-            const removeVisitedItem = profile.Visits
-              .map(item => item.id)
-              .indexOf(req.params.visited_id);
-            //splice out of array
-            visits = profile.Visits.splice(removeVisitedItem, 1);
-    
-            res.json(visits);
-          })
-          .catch(err => res.status(404).json(err));
+        //splice out of array
+        visits.splice(removeVisitedItem, 1)
+        res.json(visits);
       })
+      .catch(err => res.status(404).json(err));
   }
 );
 
