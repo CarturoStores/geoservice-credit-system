@@ -371,17 +371,16 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     Profile.destroy({ where: { userId: req.user.id }}).then(profile => {
-      return profile.destroy();
-    }).then(profile => res.json({ 
-      success: true,
-      profile: profile
-    }));
-    User.destroy({ where: { userId: req.user.id }}).then(user => {
-      return user.destroy();
-    }).then(user => res.json({ 
-      success: true,
-      user: user 
-    }));
+      res.json({ 
+        success: true
+      });
+    })
+      .then(() => User.destroy({ where: { id: req.user.id }}).then(user => {
+        res.json({ 
+          success: true 
+        })
+      }))
+      .catch(() => res.status(404).json({ error: 'Error occured because record has not completetly been deleted'}))
   }
 );
 module.exports = router;
