@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const Profile = require("../../models").Profile;
+const Visit = require("../../models").Visit;
+const Appointment = require("../../models").Appointment;
 const User = require("../../models").User;
 
 //Validation filed
@@ -24,7 +26,9 @@ router.get(
     errors = {};
 
     Profile.findOne({
-      where: { userId: req.user.id }
+      where: { 
+        userId: req.user.id
+      }
     })
       .then(profile => {
         if (!profile) {
@@ -70,8 +74,7 @@ router.post(
     Profile.findOne({ where: { userId: req.user.id }}).then(profile => {
       if (profile) {
         // Update Profile if one exists
-        Profile.findOrCreate({where: { userId: req.user.id }, 
-          defaults: Object.assign(req.body, profileFields)})
+        Profile.update(profileFields, {where: { userId: req.user.id }})
           .then(profile => res.json(profile))
           .catch(err => console.log(err));
       } else {
@@ -117,17 +120,20 @@ router.get("/handle/:handle", async (req, res) => {
 router.get("/user/:user_id", async (req, res) => {
   const errors = {};
 
-  Profile.findOne({ where: { userId: req.params.user_id }})
-    .then(profile => {
-      if (!profile) {
-        errors.noprofile = "There is no profile for the specified user";
-        res.status(404).json(errors);
-      }
-      res.json(profile);
-    })
-    .catch(err =>
-      res.status(404).json({ profile: "There is no profile with this ID" })
-    );
+  Profile.findOne({ 
+    where: { 
+      userId: req.params.user_id
+    }})
+      .then(profile => {
+        if (!profile) {
+          errors.noprofile = "There is no profile for the specified user";
+          res.status(404).json(errors);
+        }
+        res.json(profile);
+      })
+      .catch(err =>
+        res.status(404).json({ profile: "There is no profile with this ID" })
+      );
 });
 
 // @route   GET api/profile/all
@@ -147,6 +153,81 @@ router.get("/all", async (req, res) => {
     .catch(err => res.status(404).json({ profile: "There are no profiles" }));
 });
 
+// @route   GET api/profile/visited/all
+// @desc    Get all visits
+// @access  Private
+
+router.get(
+  '/visited/all',
+  passport.authenticate('jwt', { session: false}),
+  async (req, res) => {
+    Profile.findOne({
+      where: { 
+        userId: req.user.id,
+      },
+      include: [Visit]
+    }).then(profile => {
+      Visit.findAll({ 
+        where: { profileId: profile.id}
+      })
+        .then(visits => res.json(visits))
+        .catch(() => res.status(404).json({ error: 'Visits could not be retrieved'}));
+    });
+  })
+
+// @route   POST api/profile/visited
+// @desc    Post new locations visited
+// @access  Private
+
+router.post(
+  "/visited/:visited_id",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { errors, isValid } = validateVisitedInput(req.body);
+    let visits = [];
+    // Check Validation
+    if (!isValid) {
+      // Return any errors
+      return res.status(400).json(errors);
+    }
+
+    // Get fields
+    const visitFields = {};
+    if (req.body.location) visitFields.location = req.body.location;
+    if (req.body.from) visitFields.from = req.body.from;
+    if (req.body.to) visitFields.to = req.body.to;
+    if (req.body.synopsis) visitFields.synopsis = req.body.synopsis;
+
+    Profile.findOne({
+      where: { 
+        userId: req.user.id
+      },
+      include: [Visit]
+    })
+      .then(profile => {
+        Visit.findOne({
+          where: { id: req.params.visited_id}
+        })
+          .then(visit => {
+            visitFields.profileId = profile.id;
+            visits = profile.Visits;
+            visit.update(visitFields)
+              .then(visit => {
+                // Update the array by new visit updated
+                for (const [i, value] of visits.entries()) {
+                  if (value.id === visit.id) {
+                    visits[i] = Object.assign(this, visitFields);
+                  }
+                }
+                res.json(visit);
+              })
+              .catch(err => res.status(404).json(err));
+          })
+          .catch(() => res.status(404).json({error: 'Visits could not be retrieved'}));
+      })
+  }
+);
+
 // @route   POST api/profile/visited
 // @desc    Post new locations visited
 // @access  Private
@@ -163,26 +244,70 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    Profile.update({visited: req.body}, { where: { userId: req.user.id }})
-      .then(() => {
-        const newVisit = {
-          location: req.body.location,
-          from: req.body.from,
-          to: req.body.to,
-          synopsis: req.body.synopsis
-        };
-        // Add to visited json obj
-        // visited property will update as newVisit
-         res.json({
-           visits: [{
-            location: newVisit.location,
-            from: newVisit.from,
-            to: newVisit.to,
-            synopsis: newVisit.synopsis
-            }]
-         });
+    // Get fields
+    const visitFields = {};
+    if (req.body.location) visitFields.location = req.body.location;
+    if (req.body.from) visitFields.from = req.body.from;
+    if (req.body.to) visitFields.to = req.body.to;
+    if (req.body.synopsis) visitFields.synopsis = req.body.synopsis;
+
+    Profile.findOne({
+      where: { 
+        userId: req.user.id,
+      },
+      include: [Visit]
+    })
+      .then(profile => {
+        if (profile) {
+          let visits = profile.Visits;
+          visitFields.profileId = profile.id;
+          Visit.create(Object.assign(req.body, visitFields))
+            .then(visit => {
+              visits.push(visit);
+              res.json(visits);
+            })
+            .catch(() => res.status(404).json({error: 'Visits could not be retrieved'}));
+        } else {
+          return res.status(404).json({ profile: "There is no profile with this ID" })
+        }
       })
-      .catch(err => console.log(err));
+  }
+);
+
+// @route   DELETE api/profile/visited/:id
+// @desc    Delete visited location from profile
+// @access  Private
+
+router.delete(
+  "/visited/:visited_id",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    Profile.findOne({ 
+      where: { 
+        userId: req.user.id
+      },
+      include: [Visit]
+    })
+      .then(profile => {
+        let visits = [];
+        Visit.destroy({ 
+          where: { 
+            id: req.params.visited_id 
+          },
+          force: true
+        })
+          .then(() => {
+            //remove index
+            const removeVisitedItem = profile.Visits
+              .map(item => item.id)
+              .indexOf(req.params.visited_id);
+            //splice out of array
+            visits = profile.Visits.splice(removeVisitedItem, 1);
+    
+            res.json(visits);
+          })
+          .catch(err => res.status(404).json(err));
+      })
   }
 );
 
@@ -219,24 +344,6 @@ router.post(
   }
 );
 
-// @route   DELETE api/profile/visited/:id
-// @desc    Delete visited location from profile
-// @access  Private
-
-router.delete(
-  "/visited/:visited_id",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    Profile.findOne({ where: { userId: req.user.id }})
-      .then(profile => {
-        //reset visited field
-        profile.update({visited: null})
-          .then(res.json(profile))
-          .catch(err => res.status(404).json(err));
-      })
-  }
-);
-
 // @route   DELETE api/profile/appointmentlist
 // @desc    Delete appointmentlist item from profile
 // @access  Private
@@ -248,7 +355,7 @@ router.delete(
       .then(profile => {
         //reset visited field
         profile.update({appointmentlist: null})
-          .then(res.json(profile))
+          .then(res.json({ appointments: profile.appointmentlist }))
           .catch(err => res.status(404).json(err));
       })
   }
