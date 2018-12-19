@@ -372,10 +372,16 @@ router.delete(
   async (req, res) => {
     Profile.destroy({ where: { userId: req.user.id }}).then(profile => {
       return profile.destroy();
-    }).then(res.json({ success: true }));
+    }).then(profile => res.json({ 
+      success: true,
+      profile: profile
+    }));
     User.destroy({ where: { userId: req.user.id }}).then(user => {
       return user.destroy();
-    }).then(res.json({ success: true }));
+    }).then(user => res.json({ 
+      success: true,
+      user: user 
+    }));
   }
 );
 module.exports = router;
