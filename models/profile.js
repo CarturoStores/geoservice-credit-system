@@ -31,6 +31,20 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       }
     });
+
+    Profile.hasMany(models.Visit, {
+      foreignKey: {
+        name: 'profileId',
+        onDelete: 'CASCADE'
+      }
+    });
+
+    Profile.hasMany(models.Appointment, {
+      foreignKey: {
+        name: 'profileId',
+        onDelete: 'CASCADE'
+      }
+    });
   };
   return Profile;
 };

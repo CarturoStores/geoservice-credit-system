@@ -13,7 +13,7 @@ require('dotenv').config({
   const validateGeocoderInput = require('../../validation/validate');
 
   // Load Geocoding model
-  const Geocoder = db.Geocoder;
+  const Address = db.Address;
   const NodeGeocoder = require('node-geocoder');
  
   const options = {
@@ -112,7 +112,7 @@ require('dotenv').config({
       return res.status(400).json(errors);
     }
 
-    Geocoder.findOrCreate({ where: find, defaults: Object.assign(req.body,{
+    Address.findOrCreate({ where: find, defaults: Object.assign(req.body,{
       address: req.body.address, // receive complete address
       token: 'token', // generate Token
       zip_code: req.body.zip_code, // zipCode
@@ -122,7 +122,7 @@ require('dotenv').config({
       street_number: req.body.street_number, // street number
       createdAt: Date.now() // created date
     })})
-    .then(geocoder => res.json(geocoder))
+    .then(address => res.json(address))
     .catch(err => console.log(err));
   });
   
