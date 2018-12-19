@@ -213,6 +213,8 @@ router.post(
             visits = profile.Visits;
             visit.update(visitFields)
               .then(visit => {
+                visitFields.createdAt = visit.createdAt;
+                visitFields.updatedAt = visit.updatedAt;
                 // Update the array by new visit updated
                 for (const [i, value] of visits.entries()) {
                   if (value.id === visit.id) {
@@ -263,6 +265,8 @@ router.post(
           visitFields.profileId = profile.id;
           Visit.create(Object.assign(req.body, visitFields))
             .then(visit => {
+              visitFields.createdAt = visit.createdAt;
+              visitFields.updatedAt = visit.updatedAt;
               visits.push(visit);
               res.json(visits);
             })
