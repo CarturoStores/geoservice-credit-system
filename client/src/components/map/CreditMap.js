@@ -33,8 +33,8 @@ class CreditMap extends Component {
     });
 
   fetchPlaces(mapProps, map) {
-    const { google } = mapProps;
-    const service = new google.maps.places.PlaceService(map);
+    // const { google } = mapProps;
+    // const service = new google.maps.places.PlaceService(map);
   }
   
   componentDidMount = () => {
