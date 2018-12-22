@@ -37,7 +37,7 @@ class Visited extends Component {
             src={credit_card}
             style={{ width: "35px", margin: "auto", display: "round" }}
             alt=''
-          />My Trips
+          />My Visits
         </h4>
         <table className="text-center table">
           <thead>

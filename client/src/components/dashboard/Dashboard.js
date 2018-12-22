@@ -49,10 +49,10 @@ class Dashboard extends Component {
               <ProfileActions />
               <div className="row">
                 <div className="col-md-6">
-                  <Visited visited={profile.visited} />
+                  <Visited visited={profile.Visits} />
                 </div>
                 <div className="col-md-6">
-                  <Appointment appoitnmentlist={profile.appointmentlist} />
+                  {/* <Appointment appoitnmentlist={profile.appointmentlist} /> */}
                 </div>
               </div>
             </div>

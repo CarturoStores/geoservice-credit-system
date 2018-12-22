@@ -28,7 +28,8 @@ router.get(
     Profile.findOne({
       where: { 
         userId: req.user.id
-      }
+      },
+      include: [Visit]
     })
       .then(profile => {
         if (!profile) {
@@ -269,7 +270,7 @@ router.post(
               visitFields.createdAt = visit.createdAt;
               visitFields.updatedAt = visit.updatedAt;
               visits.push(visit);
-              res.json(visits);
+              res.json(profile);
             })
             .catch(() => res.status(404).json({error: 'Visits could not be retrieved'}));
         } else {
@@ -306,7 +307,7 @@ router.delete(
         })
         //splice out of array
         visits.splice(removeVisitedItem, 1)
-        res.json(visits);
+        res.json(profile);
       })
       .catch(err => res.status(404).json(err));
   }

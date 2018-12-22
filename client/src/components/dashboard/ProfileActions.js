@@ -21,7 +21,7 @@ const ProfileActions = () => {
           style={{ width: "35px", margin: "auto", display: "round" }}
           alt="Loading..."
         />
-        Add to My Trips
+        Add Visited Branches
       </Link>
       <Link to="/add-appointment" className="btn btn-light">
         <img
