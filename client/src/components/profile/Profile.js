@@ -41,8 +41,8 @@ class Profile extends Component {
           <ProfileHeader profile={profile} />
           <ProfileAbout profile={profile} />
           <ProfileCreds
-            visited={profile.visited}
-            bucketlist={profile.bucketlist}
+            visited={profile.Visits}
+            // bucketlist={profile.bucketlist}
           />
         </div>
       );

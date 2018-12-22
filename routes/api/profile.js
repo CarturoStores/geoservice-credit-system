@@ -36,7 +36,19 @@ router.get(
           errors.noprofile = "There is no profile for this user";
           return res.status(404).json(errors);
         }
-        res.json(profile);
+        const fetchProfile = {};
+        fetchProfile.id = profile.id;
+        fetchProfile.handle = profile.handle;
+        fetchProfile.location = profile.location;
+        fetchProfile.bio = profile.bio;
+        fetchProfile.social = profile.social;
+        fetchProfile.status = profile.status;
+        fetchProfile.createdAt = profile.createdAt;
+        fetchProfile.updatedAt = profile.updatedAt;
+        fetchProfile.userId = profile.userId;
+        fetchProfile.user = req.user;
+        fetchProfile.Visits = profile.Visits;
+        res.json(fetchProfile);
       })
       .catch(err => res.status(404).json(err));
   }

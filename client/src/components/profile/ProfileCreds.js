@@ -3,7 +3,7 @@ import Moment from "react-moment";
 
 class ProfileCreds extends Component {
   render() {
-    const { visited, appoitnmentlist } = this.props;
+    const { visited } = this.props;
 
     const visItems = visited.map(vis => (
       <li key={vis._id} className="list-group-item">
@@ -22,26 +22,26 @@ class ProfileCreds extends Component {
         <p> {vis.synopsis}</p>
       </li>
     ));
-    const bukItems = appoitnmentlist.map(buk => (
-      <li key={buk._id} className="list-group-item">
-        <h4>{buk.location}</h4>
-        <p>
-          <Moment format="MM/DD/YYYY">{buk.from}</Moment> -
-          {buk.to === null ? (
-            " Now"
-          ) : (
-            <Moment format="MM/DD/YYYY">{buk.to}</Moment>
-          )}
-        </p>
-        <p>
-          {buk.description === "" ? null : (
-            <span>
-              <strong>TripyDo: </strong> {buk.synopsis}
-            </span>
-          )}
-        </p>
-      </li>
-    ));
+    // const bukItems = appoitnmentlist.map(buk => (
+    //   <li key={buk._id} className="list-group-item">
+    //     <h4>{buk.location}</h4>
+    //     <p>
+    //       <Moment format="MM/DD/YYYY">{buk.from}</Moment> -
+    //       {buk.to === null ? (
+    //         " Now"
+    //       ) : (
+    //         <Moment format="MM/DD/YYYY">{buk.to}</Moment>
+    //       )}
+    //     </p>
+    //     <p>
+    //       {buk.description === "" ? null : (
+    //         <span>
+    //           <strong>TripyDo: </strong> {buk.synopsis}
+    //         </span>
+    //       )}
+    //     </p>
+    //   </li>
+    // ));
     return (
       <div className="row">
         <div className="col-md-6">
@@ -55,11 +55,11 @@ class ProfileCreds extends Component {
 
         <div className="col-md-6">
           <h3 className="text-center text-info"> Bucketlist</h3>
-          {bukItems.length > 0 ? (
+          {/* {bukItems.length > 0 ? (
             <ul className="list-group"> {bukItems}</ul>
           ) : (
             <p className="text-center">No Bucketlisit Listed.</p>
-          )}
+          )} */}
         </div>
       </div>
     );
