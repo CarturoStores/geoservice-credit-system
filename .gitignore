@@ -63,3 +63,4 @@ package-lock.json
 client/yarn.lock
 client/public/favicon.ico
 client/public/manifest.json
+client/build/
