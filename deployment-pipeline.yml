@@ -1,0 +1,143 @@
+Resources:
+  # left out some things
+  
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      # left out some things
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: 1
+                Provider: S3
+              OutputArtifacts:
+                - Name: Source
+              RunOrder: 1
+              Configuration:
+                S3Bucket: my-artifacts # could be a parameter
+                S3ObjectKey: app1/stage1.zip # could be a parameter/!ImportValue
+
+  # part of the gitlab ci integration
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref DeploymentNotificationsTopic
+      FunctionName: !GetAtt PipelineActionLambda.Arn
+
+  DeploymentNotificationsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+      - Endpoint: !GetAtt PipelineActionLambda.Arn
+        Protocol: lambda
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+              - codepipeline:GetPipelineExecution
+            Resource:
+              !Join
+                - ''
+                - - "arn:aws:codepipeline:"
+                  - !Ref AWS::Region
+                  - ":"
+                  - !Ref AWS::AccountId
+                  - ":"
+                  - !Ref Pipeline
+          - Resource:
+              - !Sub arn:aws:s3:::my-deployments/*
+            Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+
+  PipelineActionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          ACCOUNT_NAME: stage1
+          BUCKET: my-deployments
+          APP_NAME: app1
+      Code:
+        ZipFile:
+          Fn::Join:
+            - "\n"
+            - - "const AWS = require('aws-sdk');"
+              - "exports.handler = function(event, context, callback) {"
+              - " if(event.Records) {"
+              - "   const msg = JSON.parse(event.Records[0].Sns.Message);"
+              - "   const { state, version, pipeline: pipelineName, 'execution-id': pipelineExecutionId } = msg.detail;"
+              - "   const codepipeline = new AWS.CodePipeline({ region: 'eu-central-1' });"
+              - "   const s3 = new AWS.S3({ region: 'eu-central-1' });"
+              - "   codepipeline.getPipelineExecution({ pipelineName, pipelineExecutionId }, (err, data) => {"
+              - "     if (err) { console.log(err, err.stack); return callback(err); }"
+              - "     s3.putObject({ Key: `${process.env.APP_NAME}/${process.env.ACCOUNT_NAME}/${data.pipelineExecution.artifactRevisions[0].revisionId}`, Bucket: process.env.BUCKET, Body: state, ACL: 'bucket-owner-full-control' }, (err, d) => {"
+              - "       if(err) { console.log(err); return callback(err); }"
+              - "       callback();"
+              - "     });"
+              - "   });"
+              - " }"
+              - "};"
+      Runtime: nodejs6.10
+      Timeout: 25
+
+  EventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Failed pipeline event rule
+      EventPattern:
+        source:
+          - aws.codepipeline
+        detail-type:
+          - CodePipeline Pipeline Execution State Change
+        detail:
+          state:
+            - FAILED
+            - SUCCEEDED
+          pipeline:
+            - !Ref Pipeline
+      State: ENABLED
+      Targets:
+        - Arn: !Ref DeploymentNotificationsTopic
+          Id: DeploymentNotificationsTopic
+
+  PipelineFailEventSnsTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Id: TeamAlertTopicPolicy
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref DeploymentNotificationsTopic
+        Topics:
+          - !Ref DeploymentNotificationsTopic
