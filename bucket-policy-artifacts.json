@@ -1,0 +1,21 @@
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::<id1>:root",
+          "arn:aws:iam::<id2>:root",
+          "arn:aws:iam::<id3>:root"
+        ]
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:GetBucketVersioning"
+      ],
+      "Resource": ["arn:aws:s3:::my-artifacts", "arn:aws:s3:::my-artifacts/*"]
+    }
+  ]
+}
